@@ -32,6 +32,7 @@
     <build>
         <plugins>
             <plugin>
+<!--                用于打包出jar-->
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
