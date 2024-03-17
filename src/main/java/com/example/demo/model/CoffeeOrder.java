@@ -7,7 +7,7 @@ import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
-@Table(name = "T_COFFEE")
+@Table(name = "T_ORDER")
 @Builder
 @Data
 @ToString(callSuper = true)
@@ -18,10 +18,12 @@ public class CoffeeOrder extends BaseEntity {
 
     @ManyToMany
     @JoinTable(name = "T_ORDER_COFFEE")
+    @OrderBy("id")
     private List<Coffee> items;
 
+    @Enumerated
     @Column(nullable = false)
-    private Integer state;
+    private OrderState state;
 
 
 }
