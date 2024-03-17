@@ -12,10 +12,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @SpringBootApplication
 @EnableJpaRepositories
@@ -33,9 +37,11 @@ public class DemoApplication implements CommandLineRunner {
     }
 
     @Override
+    @Transactional
     public void run(String... args) throws Exception {
 
         initOrder();
+        findOrders();
     }
 
     private void initOrder() {
@@ -69,5 +75,32 @@ public class DemoApplication implements CommandLineRunner {
         log.info("CoffeeOrder: {}", eOrder);
 
     }
+
+    private void findOrders() {
+        coffeeRepository.findAll(Sort.by(Sort.Direction.DESC, "id"))
+                .forEach(cf -> log.info("Loading {}", cf));
+
+        List<CoffeeOrder> list = coffeeOrderRepository.findTop3ByOrderByUpdateTimeDescIdAsc();
+        log.info("findTop3ByOrderByUpdateTimeDescIdAsc: {}", getJoinedOrderId(list));
+
+        list = coffeeOrderRepository.findByCustomerOrderById("Shi A");
+        log.info("findByCustomerOrderById: {}", getJoinedOrderId(list));
+
+        // 不开启事务会因为没Session而报LazyInitializationException
+        list.forEach(o -> {
+            log.info("Order {}", o.getId());
+            o.getItems().forEach(i -> log.info("  Item {}", i));
+        });
+
+        list = coffeeOrderRepository.findByItems_Name("espresso");
+        log.info("findByItems_Name: {}", getJoinedOrderId(list));
+
+    }
+
+    private String getJoinedOrderId(List<CoffeeOrder> list) {
+        return list.stream().map(o -> o.getId().toString())
+                .collect(Collectors.joining(","));
+    }
+
 
 }
