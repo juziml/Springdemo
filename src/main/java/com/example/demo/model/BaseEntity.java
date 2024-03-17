@@ -15,15 +15,12 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class BaseEntity implements Serializable {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     @Column(updatable = false)
     @CreationTimestamp
     private Date createTime;
-
     @UpdateTimestamp
     private Date updateTime;
 }
